@@ -31,6 +31,8 @@ import Chart from "chart.js";
 import { ApiFactory } from "./ApiFactory";
 import ChartBar from "./ChartBar.vue";
 import { AxiosInstance } from "axios";
+import { User } from "src/@types/User";
+import { RequestedReview } from "src/@types/RequestedReview";
 
 @Component({ components: { ChartBar } })
 export default class RequestedReviewChart extends Vue {
@@ -61,8 +63,8 @@ export default class RequestedReviewChart extends Vue {
     color: "red"
   };
 
-  async onClickMember(member: any): Promise<void> {
-    console.log("click" + member);
+  async onClickMember(user: User): Promise<void> {
+    console.log("click" + user);
   }
 
   async onClickButton(): Promise<void> {
@@ -72,17 +74,17 @@ export default class RequestedReviewChart extends Vue {
       const res = await api(
         "/orgs/" + this.organization + "/teams/" + this.team + "/members"
       );
-      const results = await Promise.all(
-        res.data.flatMap(async member => {
+      const results: Array<RequestedReview> = await Promise.all(
+        res.data.flatMap(async (user: User) => {
           const res = await api(
             "search/issues?q=is:open+is:pr+org:" +
               this.organization +
               "+archived:false" +
               "+review-requested:" +
-              member.login +
+              user.login +
               "&sort=created&order=asc&page=1&per_page=10"
           );
-          return { member: member, issues: res.data.items };
+          return { user: user, issues: res.data.items };
         })
       );
 
@@ -90,12 +92,12 @@ export default class RequestedReviewChart extends Vue {
 
       this.chartData = {
         // 横軸のラベル
-        labels: results.map(result => result.member.login),
+        labels: results.map((result: RequestedReview) => result.user.login),
         // データのリスト
         datasets: [
           {
             label: "Review件数", // データのラベル
-            data: results.map(result => result.issues.length) // データの値。labelsと同じサイズ
+            data: results.map((result: RequestedReview) => result.issues.length) // データの値。labelsと同じサイズ
           }
         ]
       };
