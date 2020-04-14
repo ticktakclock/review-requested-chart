@@ -1,5 +1,5 @@
 <template>
-  <div id="RequestedCounter">
+  <div id="RequestedReviewChart">
     <div>
       <div>
         <span>token</span>
@@ -33,7 +33,7 @@ import ChartBar from "./ChartBar.vue";
 import { AxiosInstance } from "axios";
 
 @Component({ components: { ChartBar } })
-export default class RequestedCounter extends Vue {
+export default class RequestedReviewChart extends Vue {
   @Prop() private msg!: string;
   private members = [];
   private loaded = false;
