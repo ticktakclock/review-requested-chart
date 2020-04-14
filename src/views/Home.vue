@@ -1,17 +1,17 @@
 <template>
   <div class="home">
-    <RequestedReviewChart />
+    <RequestedReviewerChart />
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import RequestedReviewChart from "@/components/RequestedReviewChart.vue";
+import RequestedReviewerChart from "@/components/RequestedReviewerChart.vue";
 
 export default {
   name: "Home",
   components: {
-    RequestedReviewChart
+    RequestedReviewerChart
   }
 };
 </script>

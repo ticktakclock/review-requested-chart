@@ -1,5 +1,5 @@
 <template>
-  <div id="RequestedReviewChart">
+  <div id="RequestedReviewerChart">
     <div>
       <div>
         <span>token</span>
@@ -12,7 +12,7 @@
       </div>
     </div>
     <div v-if="error">
-      <span :style="errorStyle">error</span>
+      <span :style="errorStyle">{{ error }}</span>
     </div>
     <div :style="chartContainerStyles">
       <ChartBar
@@ -32,10 +32,10 @@ import { ApiFactory } from "./ApiFactory";
 import ChartBar from "./ChartBar.vue";
 import { AxiosInstance } from "axios";
 import { User } from "src/@types/User";
-import { RequestedReview } from "src/@types/RequestedReview";
+import { RequestedReviewer } from "src/@types/RequestedReviewer";
 
 @Component({ components: { ChartBar } })
-export default class RequestedReviewChart extends Vue {
+export default class RequestedReviewerChart extends Vue {
   @Prop() private msg!: string;
   private members = [];
   private loaded = false;
@@ -74,7 +74,7 @@ export default class RequestedReviewChart extends Vue {
       const res = await api(
         "/orgs/" + this.organization + "/teams/" + this.team + "/members"
       );
-      const results: Array<RequestedReview> = await Promise.all(
+      const results: Array<RequestedReviewer> = await Promise.all(
         res.data.flatMap(async (user: User) => {
           const res = await api(
             "search/issues?q=is:open+is:pr+org:" +
@@ -88,20 +88,21 @@ export default class RequestedReviewChart extends Vue {
         })
       );
 
-      console.log(results);
-
       this.chartData = {
         // 横軸のラベル
-        labels: results.map((result: RequestedReview) => result.user.login),
+        labels: results.map((result: RequestedReviewer) => result.user.login),
         // データのリスト
         datasets: [
           {
             label: "Review件数", // データのラベル
-            data: results.map((result: RequestedReview) => result.issues.length) // データの値。labelsと同じサイズ
+            data: results.map(
+              (result: RequestedReviewer) => result.issues.length
+            ) // データの値。labelsと同じサイズ
           }
         ]
       };
       this.loaded = true;
+      this.error = null;
     } catch (e) {
       console.log(e);
       this.error = e;
